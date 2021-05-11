@@ -3,7 +3,6 @@ Name | Phone number
 Jack Blank | 1231231234
 Jane Doe | 2342342345
 Sam Space | 3453453456
-James Space | 3290876543
 Shanshan Su | 4621098990
 Victor H | 1230984567
 Victon Hernand | 2137364
