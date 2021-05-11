@@ -32,7 +32,7 @@ public class ContactsManagerApp {
         System.out.println("\nWhat would you like to do?");
         System.out.println("  1. View contacts");
         System.out.println("  2. Add a new contact");
-        System.out.println("  3. Search a contact by name and/or phone number.");
+        System.out.println("  3. Search a contact by name.");
         System.out.println("  4. Delete an existing contact.");
         System.out.println("  5. Exit");
         System.out.print("\nEnter an option (1, 2, 3, 4 or 5): ");
@@ -52,58 +52,74 @@ public class ContactsManagerApp {
         } catch (IOException e) {
             System.out.println("Cannot find the file according to the given path.");
         }
+    }
 
+    public static String getUserInput(String prompt) {
+        System.out.println(prompt);
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
+    }
+
+    public static boolean yesNo(String prompt) {
+        System.out.println(prompt);
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine().equalsIgnoreCase("y");
     }
 
     public static void addContacts() throws IOException {
         // ask the user for first name, last name and phone number
-        System.out.println("Please enter the first name of the contact.");
-        Scanner scanner = new Scanner(System.in);
-        String firstName = scanner.nextLine();
+        String firstName = getUserInput("Please enter the first name of the contact.");
 
-        System.out.println("Please enter the last name of the contact.");
-        String lastName = scanner.nextLine();
-
-        System.out.println("Please enter the phone number.");
-        String phoneNumber = scanner.nextLine();
+        String lastName = getUserInput("Please enter the last name of the contact.");
 
         // make the name first letter uppercase and then concat name and phone number
-        String userInput = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase() + " " + lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase() + " | " + phoneNumber;
-        List<String> contacts = Files.readAllLines(filePath);
+        String name = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase() + " " + lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase();
 
-        // check if userInput is in the contacts list, if not, then add
-        if (!contacts.contains(userInput)) {
-            try {
-                if (Files.exists(filePath)) {
-                    Files.writeString(filePath, userInput + System.lineSeparator(), StandardOpenOption.APPEND);
+        List<String> contacts = Files.readAllLines(filePath);
+        boolean nameFound = false;
+
+        try {
+            // check if name is in the contacts list, if not, then add
+            for (String contact : contacts) {
+                if (contact.contains(name)) {
+                    nameFound = true;
+                    if (yesNo("Would you like to update the contact? [y/n]")) {
+                        String newNumber = getUserInput("Please enter new phone number.");
+                        contacts.set(contacts.indexOf(contact), name + " | " + newNumber);
+                        continue;
+                    }
                 }
-            } catch (IOException e) {
-                System.out.println("Cannot find the file according to the given path.");
             }
+            Files.write(filePath, contacts);
+
+            if (!nameFound) {
+                String phoneNumber = getUserInput("Please enter the phone number.");
+                String userInput = name + " | " + phoneNumber;
+                Files.writeString(filePath, userInput + System.lineSeparator(), StandardOpenOption.APPEND);
+            }
+        } catch (IOException e) {
+            System.out.println("Cannot find the file according to the given path.");
         }
     }
 
     public static void searchName() throws IOException {
-        System.out.println("3. Search by First Name or Last Name?");
+        System.out.println("Would you like to search by First Name or Last Name?");
         Scanner scanner = new Scanner(System.in);
         String userInput = scanner.nextLine();
         if(userInput.equalsIgnoreCase("First Name")){
-            System.out.println("Please Enter First Name");
+            System.out.println("Please Enter First Name.");
         }else{
-            System.out.println("Please Enter Last Name");
+            System.out.println("Please Enter Last Name.");
         }
         userInput = scanner.nextLine();
-        userInput = userInput.substring(0,1).toUpperCase() + userInput.substring(1).toLowerCase();
+        userInput = userInput.substring(0, 1).toUpperCase() + userInput.substring(1).toLowerCase();
         try{
             List<String> contacts = Files.readAllLines(filePath);
-
-
             for (int i = 0; i < contacts.size(); i++) {
                 if(contacts.get(i).contains(userInput)){
                     System.out.printf("%s\n", contacts.get(i));
                 }
-        }
-
+            }
         } catch (IOException e) {
         System.out.println("Cannot find the file according to the given path.");
     }
