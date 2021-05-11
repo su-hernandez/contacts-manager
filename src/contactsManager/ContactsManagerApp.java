@@ -10,9 +10,19 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ContactsManagerApp {
+    public static void main(String[] args) throws IOException {
+        int userChoice = contactMenu();
+        if (userChoice == 1){
+            printContacts();
+        }
+
+
+    }
+
+    static Path filePath = Paths.get("./data/contacts.txt");
 
     public static int contactMenu() {
-       System.out.println("-----------------------------");
+        System.out.println("-----------------------------");
         System.out.println("\nWhat would you like to do?");
         System.out.println("  1. View contacts");
         System.out.println("  2. Add a new contact");
@@ -25,26 +35,13 @@ public class ContactsManagerApp {
         int userChoice = myScanner.nextInt();
         System.out.println("-----------------------------");
         return userChoice;
-
-
     }
-
-    public static void main(String[] args) {
-        int userChoice = contactMenu();
-        if (userChoice == 1){
-            printContacts();
-        }
-
-
-    }
-
-    String filePath = "/Users/mono/IdeaProjects/contacts-manager/data/contacts.txt";
 
     public  static  void printContacts() throws IOException{
         try {
             List<String> fileContents = Files.readAllLines(filePath);
             for (int i = 0; i < fileContents.size(); i++) {
-                System.out.printf("%d: %s\n", i + 1, fileContents.get(i));
+                System.out.printf("%s\n", fileContents.get(i));
             }
         } catch (IOException e) {
             System.out.println("Cannot find the file according to the given path.");
