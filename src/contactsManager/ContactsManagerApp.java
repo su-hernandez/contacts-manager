@@ -1,12 +1,10 @@
 package contactsManager;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,6 +18,11 @@ public class ContactsManagerApp {
             printContacts();
         }else if (userChoice == 3) {
             searchName();
+        } else if (userChoice == 4) {
+            deleteContact();
+            printContacts();
+        } else {
+            System.out.println("Thank you for using Contacts Manager :)");
         }
 
 
@@ -66,7 +69,7 @@ public class ContactsManagerApp {
         return scanner.nextLine().equalsIgnoreCase("y");
     }
 
-    public static void addContacts() throws IOException {
+    public static String getName() {
         // ask the user for first name, last name and phone number
         String firstName = getUserInput("Please enter the first name of the contact.");
 
@@ -74,6 +77,11 @@ public class ContactsManagerApp {
 
         // make the name first letter uppercase and then concat name and phone number
         String name = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase() + " " + lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase();
+        return name;
+    }
+    public static void addContacts() throws IOException {
+        // ask the user for the contact name
+        String name = getName();
 
         List<String> contacts = Files.readAllLines(filePath);
         boolean nameFound = false;
@@ -103,15 +111,12 @@ public class ContactsManagerApp {
     }
 
     public static void searchName() throws IOException {
-        System.out.println("Would you like to search by First Name or Last Name?");
-        Scanner scanner = new Scanner(System.in);
-        String userInput = scanner.nextLine();
+        String userInput = getUserInput("Would you like to search by First Name or Last Name?");
         if(userInput.equalsIgnoreCase("First Name")){
-            System.out.println("Please Enter First Name.");
+            userInput = getUserInput("Please Enter First Name.");
         }else{
-            System.out.println("Please Enter Last Name.");
+            userInput = getUserInput("Please Enter Last Name.");
         }
-        userInput = scanner.nextLine();
         userInput = userInput.substring(0, 1).toUpperCase() + userInput.substring(1).toLowerCase();
         try{
             List<String> contacts = Files.readAllLines(filePath);
@@ -122,11 +127,32 @@ public class ContactsManagerApp {
             }
         } catch (IOException e) {
         System.out.println("Cannot find the file according to the given path.");
+        }
     }
 
+    public static void deleteContact() throws IOException {
+        // display all the contacts in the console
+        printContacts();
 
+        List<String> contacts = Files.readAllLines(filePath);
+        List<String> newList = new ArrayList<>();
+
+        // ask the user for the name that they want to delete
+        String name = getName();
+
+        for (String contact : contacts) {
+            if (contact.contains(name)) {
+                continue; // skip adding to newList
+            }
+            newList.add(contact);
+        }
+
+        try {
+            Files.write(filePath, newList);
+        } catch (IOException e) {
+            System.out.println("Cannot delete the contact.");
+        }
 
 
     }
-
 }
