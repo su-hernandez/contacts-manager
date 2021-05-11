@@ -18,6 +18,8 @@ public class ContactsManagerApp {
         } else if (userChoice == 2) {
             addContacts();
             printContacts();
+        }else if (userChoice == 3) {
+            searchName();
         }
 
 
@@ -79,6 +81,36 @@ public class ContactsManagerApp {
                 System.out.println("Cannot find the file according to the given path.");
             }
         }
+    }
+
+    public static void searchName() throws IOException {
+        System.out.println("3. Search by First Name or Last Name?");
+        Scanner scanner = new Scanner(System.in);
+        String userInput = scanner.nextLine();
+        if(userInput.equalsIgnoreCase("First Name")){
+            System.out.println("Please Enter First Name");
+        }else{
+            System.out.println("Please Enter Last Name");
+        }
+        userInput = scanner.nextLine();
+        userInput = userInput.substring(0,1).toUpperCase() + userInput.substring(1).toLowerCase();
+        try{
+            List<String> contacts = Files.readAllLines(filePath);
+
+
+            for (int i = 0; i < contacts.size(); i++) {
+                if(contacts.get(i).contains(userInput)){
+                    System.out.printf("%s\n", contacts.get(i));
+                }
+        }
+
+        } catch (IOException e) {
+        System.out.println("Cannot find the file according to the given path.");
+    }
+
+
+
+
     }
 
 }
