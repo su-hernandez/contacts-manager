@@ -105,13 +105,13 @@ public class ContactsManagerApp {
         String name = getName();
 
         List<String> contacts = Files.readAllLines(filePath);
-        boolean nameFound = false;
+        boolean isNameFound = false;
 
         try {
             for (String contact : contacts) {
                 // check if name is in the contacts list
-                if (contact.contains(name)) { // if yes, ask if user wants to update
-                    nameFound = true;
+                while (contact.contains(name)) { // if yes, ask if user wants to update
+                    isNameFound = true;
                     System.out.printf("There is ALREADY a contact named %s.\n\n", name);
                     if (yesNo("Would you like to update the contact? [y/n]")) {
                         String newNumber;
@@ -123,12 +123,15 @@ public class ContactsManagerApp {
                         newNumber = formatPhoneNumber(newNumber);
 
                         contacts.set(contacts.indexOf(contact), name + " | " + newNumber);
+                        break;
+                    } else {
+                        name = getName();
                     }
                 }
             }
             Files.write(filePath, contacts);
 
-            if (!nameFound) { // if not, ask the user to enter phone number and add
+            if (!isNameFound) { // if not, ask the user to enter phone number and add
                 String phoneNumber;
                 do {
                     phoneNumber = getUserInput("Please enter the phone number.");
