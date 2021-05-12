@@ -12,6 +12,8 @@ public class ContactsManagerApp {
     public static void main(String[] args) throws IOException {
         int userChoice = contactMenu();
         if (userChoice == 1){
+            System.out.println("Name                 | Phone number         |");
+            System.out.println("---------------------------------------------");
             printContacts();
         } else if (userChoice == 2) {
             addContacts();
@@ -31,7 +33,7 @@ public class ContactsManagerApp {
     static Path filePath = Paths.get("./data/contacts.txt");
 
     public static int contactMenu() {
-        System.out.println("-----------------------------");
+        System.out.println("---------------------------------------------");
         System.out.println("\nWhat would you like to do?");
         System.out.println("  1. View contacts");
         System.out.println("  2. Add a new contact");
@@ -42,7 +44,7 @@ public class ContactsManagerApp {
 
         Scanner myScanner = new Scanner(System.in);
         int userChoice = myScanner.nextInt();
-        System.out.println("-----------------------------");
+        System.out.println("---------------------------------------------");
         return userChoice;
     }
 
@@ -50,8 +52,10 @@ public class ContactsManagerApp {
         try {
             List<String> fileContents = Files.readAllLines(filePath);
             for (int i = 0; i < fileContents.size(); i++) {
-                System.out.printf("%s\n", fileContents.get(i));
+                String[] contactsArray = fileContents.get(i).split("  ", 2);
+                System.out.printf("%-20s | %-20s |\n", contactsArray[0], contactsArray[1]);
             }
+
         } catch (IOException e) {
             System.out.println("Cannot find the file according to the given path.");
         }
