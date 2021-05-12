@@ -79,6 +79,27 @@ public class ContactsManagerApp {
         String name = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase() + " " + lastName.substring(0, 1).toUpperCase() + lastName.substring(1).toLowerCase();
         return name;
     }
+
+    public static String formatPhoneNumber(String number) {
+        // check if the number is 7 or 10 digits which means it's US phone number
+        if (number.length() == 7) {
+            number = number.substring(0, 3) + "-" + number.substring(3);
+        } else if (number.length() == 10) {
+            number = number.substring(0, 3) + "-" + number.substring(3, 6) + "-" + number.substring(6);
+        } else { // international phone number
+            number = number.substring(0, number.length() - 10) + "-" + number.substring(number.length() - 10, number.length() - 7) + "-" + number.substring(number.length() - 7, number.length() - 4)+ "-" + number.substring(number.length() - 4);
+        }
+        return number;
+    }
+
+    public static boolean isPhoneNumberValid(String number) {
+        if (number.length() < 10 && number.length() != 7) {
+            System.out.println("The phone number you've entered is NOT a valid phone number :(");
+            return false;
+        }
+        return true;
+    }
+
     public static void addContacts() throws IOException {
         // ask the user for the contact name
         String name = getName();
@@ -87,21 +108,34 @@ public class ContactsManagerApp {
         boolean nameFound = false;
 
         try {
-            // check if name is in the contacts list, if not, then add
             for (String contact : contacts) {
-                if (contact.contains(name)) {
+                // check if name is in the contacts list
+                if (contact.contains(name)) { // if yes, ask if user wants to update
                     nameFound = true;
+                    System.out.printf("There is ALREADY a contact named %s.\n\n", name);
                     if (yesNo("Would you like to update the contact? [y/n]")) {
-                        String newNumber = getUserInput("Please enter new phone number.");
+                        String newNumber;
+                        do {
+                            newNumber = getUserInput("Please enter new phone number.");
+                        } while (!isPhoneNumberValid(newNumber));
+
+                        // format the phone number
+                        newNumber = formatPhoneNumber(newNumber);
+
                         contacts.set(contacts.indexOf(contact), name + " | " + newNumber);
-                        continue;
                     }
                 }
             }
             Files.write(filePath, contacts);
 
-            if (!nameFound) {
-                String phoneNumber = getUserInput("Please enter the phone number.");
+            if (!nameFound) { // if not, ask the user to enter phone number and add
+                String phoneNumber;
+                do {
+                    phoneNumber = getUserInput("Please enter the phone number.");
+                } while (!isPhoneNumberValid(phoneNumber));
+
+                // format the phone number
+                phoneNumber = formatPhoneNumber(phoneNumber);
                 String userInput = name + " | " + phoneNumber;
                 Files.writeString(filePath, userInput + System.lineSeparator(), StandardOpenOption.APPEND);
             }
