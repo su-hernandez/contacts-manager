@@ -12,16 +12,16 @@ public class ContactsManagerApp {
     public static void main(String[] args) throws IOException {
         int userChoice = contactMenu();
         if (userChoice == 1){
-            System.out.println("Name                 | Phone number         |");
-            System.out.println("---------------------------------------------");
             printContacts();
         } else if (userChoice == 2) {
             addContacts();
+            System.out.println();
             printContacts();
         }else if (userChoice == 3) {
             searchName();
         } else if (userChoice == 4) {
             deleteContact();
+            System.out.println();
             printContacts();
         } else {
             System.out.println("Thank you for using Contacts Manager :)");
@@ -50,10 +50,12 @@ public class ContactsManagerApp {
 
     public static void printContacts() throws IOException{
         try {
+            System.out.println("Name                 | Phone number         |");
+            System.out.println("---------------------------------------------");
             List<String> fileContents = Files.readAllLines(filePath);
             for (int i = 0; i < fileContents.size(); i++) {
-                String[] contactsArray = fileContents.get(i).split("  ", 2);
-                System.out.printf("%-20s | %-20s |\n", contactsArray[0], contactsArray[1]);
+                String[] contactsArray = fileContents.get(i).split("\\|", 2);
+                System.out.printf("%-20s | %-20s |\n", contactsArray[0].trim(), contactsArray[1].trim());
             }
 
         } catch (IOException e) {
@@ -193,7 +195,5 @@ public class ContactsManagerApp {
         } catch (IOException e) {
             System.out.println("Cannot delete the contact.");
         }
-
-
     }
 }

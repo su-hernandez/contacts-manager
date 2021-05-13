@@ -1,8 +1,10 @@
-Jack Blank  123-123-1234
-Jane Doe  234-234-2345
-Sam Space  345-345-3456
-Shanshan Su  462-109-8990
-Victor H  123-098-4567
-Ann Last  870-528-7612
-Laura Walsh  +123-456-789-0123
-Jery Little  +-981-234-5678
+Jack Blank | 123-123-1234
+Jane Doe | 234-234-2345
+Sam Space | 345-345-3456
+Shanshan Su | 462-109-8990
+Victor H | 123-098-4567
+Ann Last | 870-528-7612
+Laura Walsh | +123-456-789-0123
+Jerry Little | +1-981-234-5678
+Samantha Lockhart | 210-987-2561
+Lizabeth Sherlock | 815-091-2376
