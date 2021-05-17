@@ -11,11 +11,11 @@ import java.util.Scanner;
 
 public class ContactsManagerApp {
     public static void main(String[] args) throws IOException {
-        List<Integer> choices = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+        List<Integer> choices = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
         int userChoice = contactMenu();
 
         // check if the user enter the correct option
-        while (!choices.contains(userChoice)) {
+        while (userChoice > 5 || userChoice < 1) {
             userChoice = getInt("Enter an option (1, 2, 3, 4 or 5): ");
         }
 
@@ -40,17 +40,13 @@ public class ContactsManagerApp {
                 userChoice = contactMenu();
             } while (choices.contains(userChoice));
         }
-
-
-
-
     }
 
     static Path filePath = Paths.get("./data/contacts.txt");
 
     public static int contactMenu() {
         System.out.println("---------------------------------------------");
-        System.out.println("\nWhat would you like to do?");
+        System.out.println("What would you like to do?");
         System.out.println("  1. View contacts");
         System.out.println("  2. Add a new contact");
         System.out.println("  3. Search a contact by name.");
@@ -177,22 +173,31 @@ public class ContactsManagerApp {
 
     static List<String> contactsSearched = new ArrayList<>();
     public static List<String> searchByName() throws IOException {
+        int userInput;
+        String name;
+
         System.out.println("Would you like to search by First Name or Last Name?");
         System.out.println("1. First Name");
         System.out.println("2. Last Name\n");
-        String userInput = getUserInput("Enter an option (1 or 2):");
 
-        if(userInput.equalsIgnoreCase("First Name")){
-            userInput = getUserInput("Please Enter First Name.");
-        }else{
-            userInput = getUserInput("Please Enter Last Name.");
+        // check if the user enters the correct option
+        do {
+            userInput = getInt("Enter an option (1 or 2): ");
+        } while(userInput != 1 && userInput != 2);
+
+        // when the user enters the correct option and ask user to enter name
+        if(userInput == 1){
+            name = getUserInput("Please Enter First Name.");
+        } else {
+            name = getUserInput("Please Enter Last Name.");
         }
-        userInput = userInput.substring(0, 1).toUpperCase() + userInput.substring(1).toLowerCase();
+
+        name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 
         List<String> contacts = Files.readAllLines(filePath);
-        for (int i = 0; i < contacts.size(); i++) {
-            if(contacts.get(i).contains(userInput)){
-                contactsSearched.add(contacts.get(i));
+        for (String contact : contacts) {
+            if(contact.contains(name)){
+                contactsSearched.add(contact);
             }
         }
         return contactsSearched;
