@@ -5,30 +5,36 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class ContactsManagerApp {
     public static void main(String[] args) throws IOException {
+        List<Integer> choices = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
         int userChoice = contactMenu();
-        if (userChoice == 1){
-            printContacts();
-        } else if (userChoice == 2) {
-            addContacts();
-            System.out.println();
-            printContacts();
-        }else if (userChoice == 3) {
-            searchByName();
-            display();
-        } else if (userChoice == 4) {
-            deleteContact();
-            System.out.println();
-            printContacts();
-        } else if (userChoice == 5) {
-            System.out.println("Thank you for using Contacts Manager :)");
-        } else {
-            System.out.print("\nEnter an option (1, 2, 3, 4 or 5): ");
-        }
+
+
+
+        do {
+            if (userChoice == 1){
+                printContacts();
+            } else if (userChoice == 2) {
+                addContacts();
+                System.out.println();
+                printContacts();
+            }else if (userChoice == 3) {
+                searchByName();
+                display();
+            } else if (userChoice == 4) {
+                deleteContact();
+                System.out.println();
+                printContacts();
+            } else {
+                System.out.println("Thank you for using Contacts Manager :)");
+            }
+        } while (choices.contains(userChoice));
+
 
 
     }
@@ -196,15 +202,29 @@ public class ContactsManagerApp {
 
         for (String contact : contacts) {
             if (contact.contains(name)) {
+                System.out.println(contact + "\n"); // print out the contact that user wants to delete
                 continue; // skip adding to newList
             }
             newList.add(contact);
         }
 
-        try {
-            Files.write(filePath, newList);
-        } catch (IOException e) {
-            System.out.println("Cannot delete the contact.");
+        String input = getUserInput("Are you sure you want to delete this contact? [y/n]");
+
+        // check if the user input equals to y or n
+        while (!input.equalsIgnoreCase("y") && !input.equalsIgnoreCase("n")) {
+            input = getUserInput("If you want to delete this contact, please enter y. Otherwise, enter n.");
         }
+
+        // only delete when the user is sure to delete
+        if (input.equalsIgnoreCase("y")) {
+            if(yesNo("This cannot be undone. Please make sure you want to delete.")){
+                try {
+                    Files.write(filePath, newList);
+                } catch (IOException e) {
+                    System.out.println("Cannot delete the contact.");
+                }
+            }
+        }
+
     }
 }
