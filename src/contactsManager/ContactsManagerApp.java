@@ -14,26 +14,33 @@ public class ContactsManagerApp {
         List<Integer> choices = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
         int userChoice = contactMenu();
 
+        // check if the user enter the correct option
+        while (!choices.contains(userChoice)) {
+            userChoice = getInt("Enter an option (1, 2, 3, 4 or 5): ");
+        }
 
+        if (userChoice == 5) {
+            System.out.println("Thank you for using Contacts Manager :)");
+        } else {
+            do {
+                if (userChoice == 1){
+                    printContacts();
+                } else if (userChoice == 2) {
+                    addContacts();
+                    System.out.println();
+                    printContacts();
+                }else if (userChoice == 3) {
+                    searchByName();
+                    display();
+                } else if (userChoice == 4) {
+                    deleteContact();
+                    System.out.println();
+                    printContacts();
+                }
+                userChoice = contactMenu();
+            } while (choices.contains(userChoice));
+        }
 
-        do {
-            if (userChoice == 1){
-                printContacts();
-            } else if (userChoice == 2) {
-                addContacts();
-                System.out.println();
-                printContacts();
-            }else if (userChoice == 3) {
-                searchByName();
-                display();
-            } else if (userChoice == 4) {
-                deleteContact();
-                System.out.println();
-                printContacts();
-            } else {
-                System.out.println("Thank you for using Contacts Manager :)");
-            }
-        } while (choices.contains(userChoice));
 
 
 
@@ -76,6 +83,12 @@ public class ContactsManagerApp {
         System.out.println(prompt);
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
+    }
+
+    public static int getInt(String prompt) {
+        System.out.print(prompt);
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
     }
 
     public static boolean yesNo(String prompt) {
@@ -186,6 +199,7 @@ public class ContactsManagerApp {
     }
 
     public static void display() {
+        System.out.println("---------------------------------------------");
         for (String contact : contactsSearched) {
             System.out.printf("%s\n", contact);
         }
@@ -202,6 +216,7 @@ public class ContactsManagerApp {
 
         for (String contact : contacts) {
             if (contact.contains(name)) {
+                System.out.println("---------------------------------------------");
                 System.out.println(contact + "\n"); // print out the contact that user wants to delete
                 continue; // skip adding to newList
             }
