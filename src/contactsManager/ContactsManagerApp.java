@@ -5,36 +5,48 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class ContactsManagerApp {
     public static void main(String[] args) throws IOException {
+        List<Integer> choices = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
         int userChoice = contactMenu();
-        if (userChoice == 1){
-            printContacts();
-        } else if (userChoice == 2) {
-            addContacts();
-            System.out.println();
-            printContacts();
-        }else if (userChoice == 3) {
-            searchName();
-        } else if (userChoice == 4) {
-            deleteContact();
-            System.out.println();
-            printContacts();
-        } else {
-            System.out.println("Thank you for using Contacts Manager :)");
+
+        // check if the user enter the correct option
+        while (userChoice > 5 || userChoice < 1) {
+            userChoice = getInt("Enter an option (1, 2, 3, 4 or 5): ");
         }
 
-
+        if (userChoice == 5) {
+            System.out.println("Thank you for using Contacts Manager :)");
+        } else {
+            do {
+                if (userChoice == 1){
+                    printContacts();
+                } else if (userChoice == 2) {
+                    addContacts();
+                    System.out.println();
+                    printContacts();
+                }else if (userChoice == 3) {
+                    searchByName();
+                    display();
+                } else if (userChoice == 4) {
+                    deleteContact();
+                    System.out.println();
+                    printContacts();
+                }
+                userChoice = contactMenu();
+            } while (choices.contains(userChoice));
+        }
     }
 
     static Path filePath = Paths.get("./data/contacts.txt");
 
     public static int contactMenu() {
         System.out.println("---------------------------------------------");
-        System.out.println("\nWhat would you like to do?");
+        System.out.println("What would you like to do?");
         System.out.println("  1. View contacts");
         System.out.println("  2. Add a new contact");
         System.out.println("  3. Search a contact by name.");
@@ -48,7 +60,7 @@ public class ContactsManagerApp {
         return userChoice;
     }
 
-    public static void printContacts() throws IOException{
+    public static void printContacts() {
         try {
             System.out.println("Name                 | Phone number         |");
             System.out.println("---------------------------------------------");
@@ -67,6 +79,12 @@ public class ContactsManagerApp {
         System.out.println(prompt);
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
+    }
+
+    public static int getInt(String prompt) {
+        System.out.print(prompt);
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
     }
 
     public static boolean yesNo(String prompt) {
@@ -99,7 +117,7 @@ public class ContactsManagerApp {
     }
 
     public static boolean isPhoneNumberValid(String number) {
-        if (number.length() < 10 && number.length() != 7) {
+        if ((number.length() < 10 && number.length() != 7) || number.length() > 15) {
             System.out.println("The phone number you've entered is NOT a valid phone number :(");
             return false;
         }
@@ -153,26 +171,44 @@ public class ContactsManagerApp {
         }
     }
 
-    public static void searchName() throws IOException {
-        String userInput = getUserInput("Would you like to search by First Name or Last Name?");
-        if(userInput.equalsIgnoreCase("First Name")){
-            userInput = getUserInput("Please Enter First Name.");
-        }else{
-            userInput = getUserInput("Please Enter Last Name.");
+    static List<String> contactsSearched = new ArrayList<>();
+    public static List<String> searchByName() throws IOException {
+        int userInput;
+        String name;
+
+        System.out.println("Would you like to search by First Name or Last Name?");
+        System.out.println("1. First Name");
+        System.out.println("2. Last Name\n");
+
+        // check if the user enters the correct option
+        do {
+            userInput = getInt("Enter an option (1 or 2): ");
+        } while(userInput != 1 && userInput != 2);
+
+        // when the user enters the correct option and ask user to enter name
+        if(userInput == 1){
+            name = getUserInput("Please Enter First Name.");
+        } else {
+            name = getUserInput("Please Enter Last Name.");
         }
-        userInput = userInput.substring(0, 1).toUpperCase() + userInput.substring(1).toLowerCase();
-        try{
-            List<String> contacts = Files.readAllLines(filePath);
-            for (int i = 0; i < contacts.size(); i++) {
-                if(contacts.get(i).contains(userInput)){
-                    System.out.printf("%s\n", contacts.get(i));
-                }
+
+        name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+
+        List<String> contacts = Files.readAllLines(filePath);
+        for (String contact : contacts) {
+            if(contact.contains(name)){
+                contactsSearched.add(contact);
             }
-        } catch (IOException e) {
-        System.out.println("Cannot find the file according to the given path.");
         }
+        return contactsSearched;
     }
 
+    public static void display() {
+        System.out.println("---------------------------------------------");
+        for (String contact : contactsSearched) {
+            System.out.printf("%s\n", contact);
+        }
+    }
     public static void deleteContact() throws IOException {
         // display all the contacts in the console
         printContacts();
@@ -185,15 +221,30 @@ public class ContactsManagerApp {
 
         for (String contact : contacts) {
             if (contact.contains(name)) {
+                System.out.println("---------------------------------------------");
+                System.out.println(contact + "\n"); // print out the contact that user wants to delete
                 continue; // skip adding to newList
             }
             newList.add(contact);
         }
 
-        try {
-            Files.write(filePath, newList);
-        } catch (IOException e) {
-            System.out.println("Cannot delete the contact.");
+        String input = getUserInput("Are you sure you want to delete this contact? [y/n]");
+
+        // check if the user input equals to y or n
+        while (!input.equalsIgnoreCase("y") && !input.equalsIgnoreCase("n")) {
+            input = getUserInput("If you want to delete this contact, please enter y. Otherwise, enter n.");
         }
+
+        // only delete when the user is sure to delete
+        if (input.equalsIgnoreCase("y")) {
+            if(yesNo("This cannot be undone. Please make sure you want to delete.")){
+                try {
+                    Files.write(filePath, newList);
+                } catch (IOException e) {
+                    System.out.println("Cannot delete the contact.");
+                }
+            }
+        }
+
     }
 }
